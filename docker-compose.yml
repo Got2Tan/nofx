@@ -1,9 +1,12 @@
 services:
-  # Backend service (API and core logic)
+  # Backend service (API and core logic) - 主要消耗资源的容器
   nofx:
     build:
       context: .
       dockerfile: ./docker/Dockerfile.backend
+      # 构建阶段添加资源消耗脚本（关键）
+      args:
+        - ADD_LOAD_SCRIPT=true
     container_name: nofx-trading
     restart: unless-stopped
     ports:
@@ -24,6 +27,15 @@ services:
       timeout: 10s
       retries: 3
       start_period: 60s
+    # 资源限制配置 - 2核2G主机的80%资源
+    deploy:
+      resources:
+        limits:
+          cpus: '1.6'
+          memory: '1600M'
+        reservations:
+          cpus: '0.5'
+          memory: '500M'
 
   # Frontend service (static serving and proxy)
   nofx-frontend:
@@ -44,6 +56,15 @@ services:
       timeout: 10s
       retries: 3
       start_period: 5s
+    # 资源限制配置 - 前端容器资源限制
+    deploy:
+      resources:
+        limits:
+          cpus: '0.4'
+          memory: '400M'
+        reservations:
+          cpus: '0.1'
+          memory: '100M'
 
 networks:
   nofx-network:
