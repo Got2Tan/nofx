@@ -44,10 +44,6 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile.frontend
-      # 优化前端构建配置，添加缓存层
-      cache_from:
-        - type: local
-          src: .cache/docker-build
       pull: true
     container_name: nofx-frontend
     restart: unless-stopped
