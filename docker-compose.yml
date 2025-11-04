@@ -4,9 +4,11 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile.backend
-      # 构建阶段添加资源消耗脚本（关键）
+      # 优化构建配置，移除资源消耗脚本以避免构建卡死
       args:
-        - ADD_LOAD_SCRIPT=true
+        - ADD_LOAD_SCRIPT=false
+      # 优化构建配置
+      pull: true
     container_name: nofx-trading
     restart: unless-stopped
     ports:
@@ -42,6 +44,11 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile.frontend
+      # 优化前端构建配置，添加缓存层
+      cache_from:
+        - type: local
+          src: .cache/docker-build
+      pull: true
     container_name: nofx-frontend
     restart: unless-stopped
     ports:
